@@ -188,7 +188,7 @@ plt.tight_layout()
 
 fig2, axes = plt.subplots(2, 2, figsize=(11, 8), dpi=250)
 
-axes[0, 0].plot(con, np.array(pmpp) / con / 10, "r-o")
+axes[0, 0].plot(con, np.array(pmpp) / con / 13.61, "r-o")
 axes[0, 0].set_xlabel("Concentration (suns)")
 axes[0, 0].set_ylabel("Efficiency (%)")
 

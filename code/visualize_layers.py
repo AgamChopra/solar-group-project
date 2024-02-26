@@ -49,6 +49,10 @@ layers = all_layers
 fig, ax = plt.subplots(figsize=(10, 8), dpi=350)
 layer_bottom = 0  # Reset starting position
 
+# Generate colors for each layer
+num_layers = len(all_layers)
+colors = plt.cm.tab20(np.linspace(0, 1, num_layers))
+
 for i, layer in enumerate(reversed(layers)):  # Reverse the list to flip the order
     layer_top = layer_bottom + layer['width'] * 1e9  # Convert width to nm for better readability
     ax.fill_between([0, 1], layer_bottom, layer_top, color=colors[-i-1], label=f"{layer['name']} ({layer['role']})")
