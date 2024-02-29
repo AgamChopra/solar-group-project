@@ -12,8 +12,8 @@ T = 400
 wl = np.linspace(300, 1100, 501) * 1e-9
 
 # First, we create the materials of the QW
-QWmat = material("InGaAs")(T=T, In=0.2, strained=True)
-Bmat = material("GaAsP")(T=T, P=0.1, strained=True)
+QWmat = material("InGaAs")(T=T, In=0.22, strained=True)
+Bmat = material("GaAsP")(T=T, P=0.12, strained=True)
 i_GaAs = material("GaAs")(T=T)
 
 # The QW is 7 nm wide, with GaAs interlayers 2 nm thick at each side and GaAsP barriers
@@ -27,7 +27,7 @@ QW = PDD.QWunit(
         Layer(width=10e-9, material=Bmat, role="barrier"),
     ],
     T=T,
-    repeat=50,
+    repeat=32,
     substrate=i_GaAs,
 )
 
@@ -36,10 +36,10 @@ QW = PDD.QWunit(
 QW_list = QW.GetEffectiveQW(wavelengths=wl)
 
 # Materials for the BOTTOM junction
-window_bottom = material("GaInP")(T=T, Nd=5e24, In=0.49)
+window_bottom = material("GaInP")(T=T, Nd=5e24, In=0.51)
 n_GaAs = material("GaAs")(T=T, Nd=1e24)
-p_GaAs = material("GaAs")(T=T, Na=8e22)
-bsf_bottom = material("GaInP")(T=T, Na=5e24, In=0.49)
+p_GaAs = material("GaAs")(T=T, Na=1e23)
+bsf_bottom = material("GaInP")(T=T, Na=5e24, In=0.51)
 
 # If you want to test the code without QWs, to make ti a bit faster, comment the line
 # with QW_list
@@ -54,18 +54,18 @@ GaAs_junction = Junction(
         Layer(width=2000e-9, material=p_GaAs, role="Base"),
         Layer(width=200e-9, material=bsf_bottom, role="BSF"),
     ],
-    sn=1e6,
-    sp=1e6,
+    sn=1e3,
+    sp=1e3,
     T=T,
     kind="PDD",
 )
 
 # Materials for the TOP junction
 window_top = material("AlInP")(
-    T=T, Nd=5e23, Al=0.53, electron_mobility=0.01, hole_mobility=7e-4
+    T=T, Nd=5e23, Al=0.55, electron_mobility=0.01, hole_mobility=7e-4
 )
-n_GaInP = material("GaInP")(T=T, Nd=5e23, In=0.49)
-p_GaInP = material("GaInP")(T=T, Na=8e22, In=0.49)
+n_GaInP = material("GaInP")(T=T, Nd=5e23, In=0.51)
+p_GaInP = material("GaInP")(T=T, Na=8e22, In=0.51)
 bsf_top = material("AlInP")(
     T=T, Na=5e23, Al=0.53, electron_mobility=0.01, hole_mobility=7e-4
 )
