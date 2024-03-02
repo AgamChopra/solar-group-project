@@ -1,3 +1,17 @@
+"""
+Created on Feb 2024
+@author: Agamdeep Chopra
+@email: achopra4@uw.edu
+@website: https://agamchopra.github.io/
+@affiliation: University of Washington, Seattle, USA
+@Refs: Solcore documentation and tutorial
+
+Simulation results:
+    Total AM0 power/m2 simulated = 1002.5273900791103 W
+    Pmpp/cm2 = 0.033941825345084234 W
+    Total peak efficiency = 33.85625737607614 %
+    Voc = 2.273639726670655 V
+"""
 from solcore import material
 from solcore.structure import Layer, Junction, TunnelJunction
 from solcore.solar_cell import SolarCell
@@ -287,6 +301,8 @@ plt.ylabel('W')
 plt.title('Pmpp (Maximum Power Point) per cm$^{2}$')
 plt.show()
 
-print(f'Total AM0 power/m2 simulated = {total_solar_power_simulated}W')
-print(f'Pmpp/cm2 = {max_pmpp_m2/10000}W')
-print(f'Total peak efficiency = {np.array(pmpp)[-1] / (con[-1] * (total_solar_power_simulated / 100))}%')
+print(f'Total AM0 power/m2 simulated = {total_solar_power_simulated} W')
+print(f'Pmpp/cm2 = {max_pmpp_m2/10000} W')
+print(
+    f'Total peak efficiency = {np.array(pmpp)[-1] / (con[-1] * (total_solar_power_simulated / 100))} %')
+print(f'Voc = {max(abs(np.array(voc)))} V')
