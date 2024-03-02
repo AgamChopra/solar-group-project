@@ -5,11 +5,31 @@ from solcore.solar_cell_solver import solar_cell_solver
 from solcore.light_source import LightSource
 import solcore.poisson_drift_diffusion as PDD
 
+import os
+import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
+from matplotlib import pyplot as plt
+
+path = os.path.abspath(__file__)[:-13]
+os.chdir(path)
 
 T = 400
 wl = np.linspace(300, 1100, 501) * 1e-9
+
+# path = '/home/agam/Documents/git projects/solar-group-project/code/am0_spectral_info.ods'
+df = pd.read_excel(os.path.join(path, 'am0_spectral_info.ods'), engine='odf')
+wavelengths = df.values[:, 0]
+spectral_irradiances = df.values[:, 1]
+
+plt.figure(figsize=(10, 6), dpi=250)
+plt.plot(wavelengths, spectral_irradiances, linestyle='-', color='red')
+plt.title('AM0 Spectral Irradiance vs. Wavelength Simulated')
+plt.xlabel('Wavelength (nm)')
+plt.ylabel('Spectral Irradiance (W/m^2/nm)')
+plt.grid(True)
+plt.show()
+
+total_solar_power_simulated = np.trapz(df.values[:, 1], df.values[:, 0])
 
 # First, we create the materials of the QW
 QWmat = material("InGaAs")(T=T, In=0.2, strained=True)
@@ -27,7 +47,7 @@ QW = PDD.QWunit(
         Layer(width=10e-9, material=Bmat, role="barrier"),
     ],
     T=T,
-    repeat=50,
+    repeat=30,
     substrate=i_GaAs,
 )
 
@@ -151,7 +171,7 @@ voc = []
 FF = []
 pmpp = []
 
-fig3, axIV = plt.subplots(1, 1, figsize=(16, 10), dpi=250)
+fig3, axIV = plt.subplots(1, 1, figsize=(12, 8), dpi=250)
 for c in con:
     light_source.concentration = c
 
@@ -188,7 +208,8 @@ plt.tight_layout()
 
 fig2, axes = plt.subplots(2, 2, figsize=(11, 8), dpi=250)
 
-axes[0, 0].plot(con[1:], np.array(pmpp)[1:] / (con[1:] * 13.61), "r-o")
+axes[0, 0].plot(con[1:], np.array(pmpp)[1:] /
+                (con[1:] * (total_solar_power_simulated / 100)), "r-o")  # 13.61
 axes[0, 0].set_xlabel("Concentration (suns)")
 axes[0, 0].set_ylabel("Efficiency (%)")
 
@@ -210,14 +231,16 @@ plt.tight_layout()
 fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 4), dpi=250)
 for j in my_solar_cell.junction_indices:
     zz = (
-        my_solar_cell[j].short_circuit_data.Bandstructure["x"] + my_solar_cell[j].offset
+        my_solar_cell[j].short_circuit_data.Bandstructure["x"] +
+        my_solar_cell[j].offset
     )
     n = my_solar_cell[j].short_circuit_data.Bandstructure["n"]
     p = my_solar_cell[j].short_circuit_data.Bandstructure["p"]
     ax1.semilogy(zz * 1e9, n, "b")
     ax1.semilogy(zz * 1e9, p, "r")
 
-    zz = my_solar_cell[j].equilibrium_data.Bandstructure["x"] + my_solar_cell[j].offset
+    zz = my_solar_cell[j].equilibrium_data.Bandstructure["x"] + \
+        my_solar_cell[j].offset
     n = my_solar_cell[j].equilibrium_data.Bandstructure["n"]
     p = my_solar_cell[j].equilibrium_data.Bandstructure["p"]
     ax1.semilogy(zz * 1e9, n, "b--")
@@ -244,3 +267,26 @@ ax2.set_xlim(350, 1150)
 plt.tight_layout()
 
 plt.show()
+
+
+plt.figure(dpi=250)
+plt.plot(con[1:], np.array(pmpp)[1:], "k-o")
+plt.xlabel('Concentration (suns)')
+plt.ylabel('Wm$^{-2}$')
+plt.title('Pmpp (Maximum Power Point) per m$^{2}$ vs Concentration')
+plt.show()
+
+
+max_pmpp_m2 = np.array(pmpp)[-1]
+cm_area = np.array([1, 100, 10000, 1000000])
+max_pmpp_100cm2_to_1m2 = (max_pmpp_m2/10000) * cm_area
+plt.figure(dpi=250)
+plt.loglog(cm_area, max_pmpp_100cm2_to_1m2, "k-o")
+plt.xlabel('Area (cm$^{2}$)')
+plt.ylabel('W')
+plt.title('Pmpp (Maximum Power Point) per cm$^{2}$')
+plt.show()
+
+print(f'Total AM0 power/m2 simulated = {print(total_solar_power_simulated)}W')
+print(f'Pmpp/cm2 = {max_pmpp_m2/10000}W')
+print(f'Total peak efficiency = {np.array(pmpp)[-1] / (con[-1] * (total_solar_power_simulated / 100))}%')
