@@ -287,6 +287,6 @@ plt.ylabel('W')
 plt.title('Pmpp (Maximum Power Point) per cm$^{2}$')
 plt.show()
 
-print(f'Total AM0 power/m2 simulated = {print(total_solar_power_simulated)}W')
+print(f'Total AM0 power/m2 simulated = {total_solar_power_simulated}W')
 print(f'Pmpp/cm2 = {max_pmpp_m2/10000}W')
 print(f'Total peak efficiency = {np.array(pmpp)[-1] / (con[-1] * (total_solar_power_simulated / 100))}%')
